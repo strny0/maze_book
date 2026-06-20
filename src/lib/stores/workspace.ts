@@ -2,7 +2,7 @@ import { writable, derived, get } from "svelte/store";
 import { setWorkspace, type WorkspaceDoc, type RoomWork } from "../db/idb";
 import type { UserEdge } from "../types";
 
-const EMPTY_WORK: RoomWork = Object.freeze({ notes: "", ink: [], annotations: [], pins: [] }) as RoomWork;
+const EMPTY_WORK: RoomWork = Object.freeze({ notes: "", ink: [], annotations: [], imageAnnotations: [], pins: [] }) as RoomWork;
 
 export const currentRoom = writable<string>("01");
 export const roomWork = writable<Record<string, RoomWork>>({});
@@ -68,6 +68,10 @@ export function startAutosave() {
   workspaceDoc.subscribe((doc) => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => void setWorkspace(doc), 400);
+  });
+  window.addEventListener("beforeunload", () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    void setWorkspace(get(workspaceDoc));
   });
 }
 

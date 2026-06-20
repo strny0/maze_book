@@ -5,11 +5,21 @@ export interface RoomWork {
   notes: string;
   ink: { tool: "pen" | "highlighter"; color: string; points: number[][] }[];
   annotations: TextAnnotation[];
+  imageAnnotations: ImageAnnotation[];
   pins: Pin[];
 }
 export interface TextAnnotation {
   paraIndex: number; start: number; end: number;
   textColor?: string; highlight?: string; bold?: boolean; italic?: boolean; comment?: string;
+}
+export interface ImageAnnotation {
+  id: number;
+  type: "point" | "box";
+  x: number;
+  y: number;
+  w?: number;
+  h?: number;
+  text: string;
 }
 export interface Pin { x: number; y: number; label: string; target?: string; note?: string }
 export interface TagState { defs: { name: string; color: string }[]; byRoom: Record<string, string[]> }
