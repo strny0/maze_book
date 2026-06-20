@@ -23,7 +23,7 @@
 {:else}
   <div class="list">
     {#each $rooms as r}
-      <button class="row" class:cur={r.id === $currentRoom} on:click={() => go(r.id)}>
+      <button class="row" class:cur={r.id === $currentRoom} class:seen={$explored.has(r.id)} on:click={() => go(r.id)}>
         <span>{r.id}</span><span class="d">{doorsFrom($doors, r.id).join(" ")}</span>
       </button>
     {/each}
@@ -41,5 +41,6 @@
   .list { display: flex; flex-direction: column; gap: 4px; }
   .row { display: flex; justify-content: space-between; padding: 8px; background: #161b22;
     border: 1px solid var(--line); border-radius: 6px; color: var(--text); cursor: pointer; }
+  .row.seen { border-color: var(--mza); }
   .d { color: var(--mzam); font-size: 12px; }
 </style>
