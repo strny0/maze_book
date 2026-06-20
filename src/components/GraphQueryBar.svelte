@@ -22,8 +22,8 @@
     if (!id) return;
     if (!canvasIds.has(id)) { status = `Room ${id} is not on canvas`; return; }
     status = "";
-    dispatch("highlight", new Set([id]));
-    dispatch("pathEdges", new Set());
+    dispatch("highlight", new Set<string>([id]));
+    dispatch("pathEdges", new Set<string>());
   }
 
   function onPath() {
