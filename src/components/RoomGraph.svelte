@@ -65,7 +65,7 @@
       style: style as any,
       layout: { name: "preset" },
     });
-    runAndFit();
+    cy.fit(undefined, 30);
     cy.on("tap", "node", (e) => {
       const id: string = e.target.id();
       markExplored(id);
