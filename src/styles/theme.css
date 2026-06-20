@@ -1,44 +1,147 @@
+/* ── Font families ──────────────────────────────────────── */
 :root {
-  --mza: #e2a857;   /* accent gold */
-  --mzam: #b9a06f;  /* muted gold (labels) */
-  --mzad: #15110a;  /* on-gold text */
-  --mzabg: #242f3b;
-  --bg: #0b0e13;    /* app background (near black) */
-  --panel: #161b22; /* cards */
-  --panel2: #1c232d;/* raised controls */
-  --line: #232b37;  /* borders */
-  --text: #cbd3dd;
-  --dim: #828c9a;   /* secondary text */
-  --serif: Georgia, "Times New Roman", serif;
+  --serif-font: 'EB Garamond', Georgia, serif;
+  --disp-font:  'IM Fell English', Georgia, serif;
+  --sc-font:    'IM Fell English SC', Georgia, serif;
 }
 
+/* ── Manuscript (default) ───────────────────────────────── */
+:root,
+[data-theme="manuscript"] {
+  --bg:             #e4d8b8;
+  --panel:          #f4ecd4;
+  --panel2:         #ece0c0;
+  --line:           #c7b288;
+  --text:           #2d2416;
+  --dim:            #6f5d3f;
+  --mza:            #a9762a;
+  --mzam:           #8a7547;
+  --mzad:           #f6efda;
+  --panel-shadow:   0 1px 0 #fbf6e6 inset, 0 8px 22px rgba(74,55,22,.13);
+  --btn-border-b:   #cdb88d;
+  --ta-bg:          #fcf6e4;
+  --ta-border:      #cbb78c;
+  --ta-text:        #2d2416;
+  --seg-bg:         #e8dcbb;
+  --seg-border:     #c4b083;
+  --seg-active-bg:  #2d2416;
+  --seg-active-text:#f3ead2;
+  --seg-idle:       #6f5d3f;
+  --mat-bg:         #e8dcbb;
+  --mat-border:     #bda878;
+  --mat-shadow:     0 14px 34px rgba(70,52,20,.18);
+  --view-bg:        #e6d9b9;
+  --view-border:    #a9966a;
+  --vignette:       inset 0 0 70px 8px rgba(54,40,16,.24);
+  --popup-bg:       #f7f0db;
+  --popup-border:   #c3ad7c;
+  --popup-text:     #2d2416;
+  --popup-label:    #9a7b3e;
+  --popup-shadow:   0 14px 30px rgba(50,34,12,.26);
+  --marker:         #9e3526;
+}
+
+/* ── Engraved ───────────────────────────────────────────── */
+[data-theme="engraved"] {
+  --bg:             #d8c8a0;
+  --panel:          #241d12;
+  --panel2:         #3a2f1d;
+  --line:           #0e0a04;
+  --text:           #e6d8b1;
+  --dim:            #b3a079;
+  --mza:            #cda23f;
+  --mzam:           #b3a079;
+  --mzad:           #221b10;
+  --panel-shadow:   0 3px 0 rgba(0,0,0,.22), 0 12px 28px rgba(40,28,8,.30);
+  --btn-border-b:   #140f08;
+  --ta-bg:          #f8f0d6;
+  --ta-border:      #b6a16f;
+  --ta-text:        #221b10;
+  --seg-bg:         #241d12;
+  --seg-border:     #0e0a04;
+  --seg-active-bg:  #cda23f;
+  --seg-active-text:#221b10;
+  --seg-idle:       #cdbd96;
+  --mat-bg:         #e6d9b6;
+  --mat-border:     #221b10;
+  --mat-shadow:     0 0 0 3px #e6d9b6, 0 0 0 5px #221b10, 0 16px 36px rgba(40,28,8,.25);
+  --view-bg:        #e3d4ac;
+  --view-border:    #221b10;
+  --vignette:       inset 0 0 80px 10px rgba(40,28,8,.32);
+  --popup-bg:       #f1e7cb;
+  --popup-border:   #221b10;
+  --popup-text:     #221b10;
+  --popup-label:    #8a6a28;
+  --popup-shadow:   0 14px 30px rgba(30,20,6,.34);
+  --marker:         #9e3526;
+}
+
+/* ── Foxed ──────────────────────────────────────────────── */
+[data-theme="foxed"] {
+  --bg:             #cdb98c;
+  --panel:          #ecdcb4;
+  --panel2:         #e4d2a6;
+  --line:           #b39a60;
+  --text:           #3a2c18;
+  --dim:            #6b5736;
+  --mza:            #8f6a22;
+  --mzam:           #826a3c;
+  --mzad:           #f3e7c4;
+  --panel-shadow:   0 1px 0 #f6eccf inset, 0 8px 22px rgba(80,58,22,.18);
+  --btn-border-b:   #bfa56d;
+  --ta-bg:          #f6ecd0;
+  --ta-border:      #b89f66;
+  --ta-text:        #3a2c18;
+  --seg-bg:         #e2d09f;
+  --seg-border:     #b39a60;
+  --seg-active-bg:  #3a2c18;
+  --seg-active-text:#efe1bd;
+  --seg-idle:       #6b5736;
+  --mat-bg:         #e2d09f;
+  --mat-border:     #9c7a32;
+  --mat-shadow:     0 0 0 2px rgba(143,106,34,.35), 0 16px 34px rgba(80,56,18,.24);
+  --view-bg:        #ddca97;
+  --view-border:    #9c7a32;
+  --vignette:       inset 0 0 90px 14px rgba(70,48,14,.38);
+  --popup-bg:       #f0e3bf;
+  --popup-border:   #a98c4e;
+  --popup-text:     #3a2c18;
+  --popup-label:    #8a6a28;
+  --popup-shadow:   0 14px 30px rgba(60,40,12,.30);
+  --marker:         #97402a;
+}
+
+/* ── Base styles ────────────────────────────────────────── */
 * { box-sizing: border-box; }
+
 html, body {
   margin: 0; height: 100%;
   background: var(--bg); color: var(--text);
-  font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--serif-font);
   -webkit-font-smoothing: antialiased;
 }
 
-/* shared card + label vocabulary (matches the prototype panels) */
+/* Shared card vocabulary */
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 14px 16px;
+  box-shadow: var(--panel-shadow);
 }
+
+/* Label: IM Fell English SC small-caps style */
 .label {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
+  font-family: var(--sc-font);
+  font-size: 13px;
+  letter-spacing: .04em;
   color: var(--mzam);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 button { font-family: inherit; }
 
-/* tidy scrollbars inside panels */
+/* Tidy scrollbars */
 *::-webkit-scrollbar { width: 10px; height: 10px; }
-*::-webkit-scrollbar-thumb { background: #2a323e; border-radius: 6px; border: 2px solid var(--bg); }
+*::-webkit-scrollbar-thumb { background: var(--panel2); border-radius: 6px; border: 2px solid var(--bg); }
 *::-webkit-scrollbar-track { background: transparent; }
