@@ -4,7 +4,7 @@ export function serializeWorkspace(doc: WorkspaceDoc): string { return JSON.stri
 export function parseWorkspace(text: string): WorkspaceDoc {
   const d = JSON.parse(text);
   if (!d || typeof d !== "object" || !("rooms" in d)) throw new Error("Invalid workspace file");
-  return d as WorkspaceDoc;
+  return { ...d, userEdges: d.userEdges ?? [] } as WorkspaceDoc;
 }
 export function serializeContent(doc: ContentDoc): string { return JSON.stringify(doc, null, 2); }
 export function parseContent2(text: string): ContentDoc {

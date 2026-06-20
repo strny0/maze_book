@@ -1,22 +1,25 @@
 import { writable, derived, get } from "svelte/store";
 import { setWorkspace, type WorkspaceDoc, type RoomWork } from "../db/idb";
+import type { UserEdge } from "../types";
 
 const EMPTY_WORK: RoomWork = Object.freeze({ notes: "", ink: [], annotations: [], pins: [] }) as RoomWork;
 
-export const currentRoom = writable<string>("00");
+export const currentRoom = writable<string>("01");
 export const explored = writable<Set<string>>(new Set());
 export const roomWork = writable<Record<string, RoomWork>>({});
 export const tags = writable<WorkspaceDoc["tags"]>({ defs: [], byRoom: {} });
 export const positions = writable<Record<string, { x: number; y: number }>>({});
 export const globalNotes = writable<string>("");
+export const userEdges = writable<UserEdge[]>([]);
 
 export function initWorkspace(doc?: WorkspaceDoc) {
-  currentRoom.set("00");
+  currentRoom.set("01");
   explored.set(new Set(doc?.explored ?? []));
   roomWork.set(doc?.rooms ?? {});
   tags.set(doc?.tags ?? { defs: [], byRoom: {} });
   positions.set(doc?.positions ?? {});
   globalNotes.set(doc?.globalNotes ?? "");
+  userEdges.set(doc?.userEdges ?? []);
 }
 
 export function getRoomWork(id: string): RoomWork {
@@ -28,28 +31,16 @@ export function updateRoomWork(id: string, patch: Partial<RoomWork>) {
 export function markExplored(id: string) {
   explored.update((s) => new Set(s).add(id));
 }
+export function addUserEdge(edge: UserEdge) {
+  userEdges.update((es) => [...es, edge]);
+}
 
 export const workspaceDoc = derived(
-  [roomWork, explored, tags, positions, globalNotes],
-  ([$rw, $ex, $tg, $pos, $gn]): WorkspaceDoc => ({
-    rooms: $rw, explored: [...$ex], tags: $tg, positions: $pos, globalNotes: $gn,
+  [roomWork, explored, tags, positions, globalNotes, userEdges],
+  ([$rw, $ex, $tg, $pos, $gn, $ue]): WorkspaceDoc => ({
+    rooms: $rw, explored: [...$ex], tags: $tg, positions: $pos, globalNotes: $gn, userEdges: $ue,
   })
 );
-
-export function toggleTag(roomId: string, name: string) {
-  tags.update((t) => {
-    const cur = t.byRoom[roomId] ?? [];
-    const next = cur.includes(name) ? cur.filter((n) => n !== name) : [...cur, name];
-    return { ...t, byRoom: { ...t.byRoom, [roomId]: next } };
-  });
-}
-export function setTagDef(name: string, color: string) {
-  tags.update((t) =>
-    t.defs.some((d) => d.name === name)
-      ? t
-      : { ...t, defs: [...t.defs, { name, color }] }
-  );
-}
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 let started = false;

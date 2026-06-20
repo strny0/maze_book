@@ -1,5 +1,5 @@
 import { openDB, type IDBPDatabase } from "idb";
-import type { Room, Door } from "../types";
+import type { Room, Door, UserEdge } from "../types";
 
 export interface RoomWork {
   notes: string;
@@ -21,6 +21,7 @@ export interface WorkspaceDoc {
   tags: TagState;
   positions: Record<string, { x: number; y: number }>;
   globalNotes: string;
+  userEdges: UserEdge[];
 }
 
 const DB_NAME = "maze-companion";

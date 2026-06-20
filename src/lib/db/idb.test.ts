@@ -12,7 +12,7 @@ describe("idb", () => {
     expect(await getWorkspace()).toBeUndefined();
   });
   it("round-trips a workspace doc", async () => {
-    await setWorkspace({ rooms: {}, explored: ["01"], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "hi" });
+    await setWorkspace({ rooms: {}, explored: ["01"], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "hi", userEdges: [] });
     expect((await getWorkspace())?.explored).toEqual(["01"]);
   });
 });
