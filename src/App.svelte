@@ -4,9 +4,11 @@
   import { getWorkspace } from "./lib/db/idb";
   import { loadContent } from "./lib/stores/content";
   import { initWorkspace, startAutosave, currentRoom } from "./lib/stores/workspace";
-  import { rooms } from "./lib/stores/content";
+  import { rooms, roomById } from "./lib/stores/content";
+  import RoomImage from "./components/RoomImage.svelte";
 
   let ready = false;
+  $: currentRoomObj = $roomById.get($currentRoom);
   onMount(async () => {
     const content = await bootstrapContent(
       (u) => fetch(u).then((r) => r.text()),
@@ -20,8 +22,10 @@
 </script>
 
 {#if ready}
-  <main>
-    <p>Loaded {$rooms.length} rooms. Current: {$currentRoom}</p>
+  <main class="core">
+    <section class="image">
+      {#if currentRoomObj}<RoomImage room={currentRoomObj} />{/if}
+    </section>
   </main>
 {:else}
   <p>Loading…</p>
