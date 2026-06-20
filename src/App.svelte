@@ -12,6 +12,7 @@
   import CurrentRoom from "./components/CurrentRoom.svelte";
   import RoomDirectory from "./components/RoomDirectory.svelte";
   import RoomGraph from "./components/RoomGraph.svelte";
+  import RoomText from "./components/RoomText.svelte";
 
   let ready = false;
   $: currentRoomObj = $roomById.get($currentRoom);
@@ -30,6 +31,8 @@
 {#if ready}
   <LeftDrawer>
     <CurrentRoom />
+    <hr />
+    {#if currentRoomObj}<RoomText room={currentRoomObj} />{/if}
     <hr />
     <RoomDirectory />
   </LeftDrawer>
