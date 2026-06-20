@@ -6,6 +6,7 @@
   import { initWorkspace, startAutosave, currentRoom } from "./lib/stores/workspace";
   import { rooms, roomById } from "./lib/stores/content";
   import RoomImage from "./components/RoomImage.svelte";
+  import Notes from "./components/Notes.svelte";
 
   let ready = false;
   $: currentRoomObj = $roomById.get($currentRoom);
@@ -26,6 +27,7 @@
     <section class="image">
       {#if currentRoomObj}<RoomImage room={currentRoomObj} />{/if}
     </section>
+    <section class="notes"><Notes roomId={$currentRoom} /></section>
   </main>
 {:else}
   <p>Loading…</p>
