@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import "fake-indexeddb/auto";
 import { bootstrapContent } from "./bootstrap";
 
@@ -10,5 +10,13 @@ describe("bootstrapContent", () => {
     const doc = await bootstrapContent(async () => "01 -> 00\n00 -> 01", async () => json);
     expect(doc.rooms.map((r) => r.id)).toContain("01");
     expect(doc.doors).toEqual([{ from: "00", to: "01", oneWay: false }]);
+  });
+
+  it("returns existing doc without re-seeding when store is populated", async () => {
+    const first = await bootstrapContent(async () => "01 -> 00\n00 -> 01", async () => json);
+    const stub = vi.fn().mockResolvedValue("different data");
+    const second = await bootstrapContent(stub, stub);
+    expect(second).toEqual(first);
+    expect(stub).not.toHaveBeenCalled();
   });
 });
