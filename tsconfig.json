@@ -1,0 +1,13 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["vitest/globals"],
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "strict": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.svelte"]
+}

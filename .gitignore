@@ -2,5 +2,6 @@ node_modules/
 dist/
 .superpowers/
 *.local
+.claude/settings.local.json
 .DS_Store
 Thumbs.db
