@@ -34,22 +34,34 @@
 {/if}
 
 <style>
-  .nav { display: flex; gap: 8px; margin-bottom: 10px; }
-  .nav button { flex: 1; background: var(--panel2); color: var(--text); border: 1px solid var(--line);
-    border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
-  .nav button:hover:not(:disabled) { border-color: var(--mza); }
-  .nav button:disabled { opacity: .4; cursor: default; }
+  .nav { display: flex; gap: 8px; margin-bottom: 12px; }
+  .nav button {
+    flex: 1; background: var(--panel2); color: var(--text);
+    border: 1px solid var(--line); border-bottom: 3px solid var(--btn-border-b);
+    border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 13px;
+    font-family: var(--sc-font); letter-spacing: .03em;
+    box-shadow: 0 2px 3px rgba(60,40,12,.1), inset 0 1px 0 rgba(255,252,240,.4);
+  }
+  .nav button:hover:not(:disabled) { border-color: var(--mzam); }
+  .nav button:disabled { opacity: .35; cursor: default; }
 
-  .cur { display: flex; gap: 12px; align-items: center; }
-  .big { font-size: 40px; font-weight: 700; color: var(--mza); line-height: 1; }
-  .meta { min-width: 0; }
-  .title { font-size: 14px; }
-  .count { font-size: 12px; color: var(--dim); margin-top: 2px; }
+  .cur { display: flex; gap: 12px; align-items: center; margin-bottom: 4px; }
+  .big { font-family: var(--disp-font); font-size: 44px; color: var(--mza); line-height: 1; }
+  .title { font-family: var(--serif-font); font-size: 15px; font-style: italic; }
+  .count { font-size: 12px; color: var(--dim); margin-top: 3px; font-family: var(--sc-font); letter-spacing:.03em; }
 
-  .sub { font-size: 9.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--mzam);
-    margin: 10px 0 6px; }
+  .sub {
+    font-family: var(--sc-font); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--mzam);
+    margin: 12px 0 6px;
+  }
   .doors { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip { background: var(--panel2); color: var(--mzam); border: 1px solid var(--line);
-    border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px; }
-  .chip:hover { border-color: var(--mza); }
+  .chip {
+    background: var(--panel2); color: var(--mzam);
+    border: 1px solid var(--line); border-bottom: 3px solid var(--btn-border-b);
+    border-radius: 7px; padding: 4px 12px; cursor: pointer; font-size: 13px;
+    font-family: var(--sc-font); letter-spacing: .03em;
+    box-shadow: 0 2px 2px rgba(60,40,12,.09), inset 0 1px 0 rgba(255,252,240,.35);
+  }
+  .chip:hover { border-color: var(--mza); color: var(--text); }
 </style>
