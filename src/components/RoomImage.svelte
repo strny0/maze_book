@@ -15,7 +15,7 @@
   let hideInk = false;
   let svg: SVGSVGElement;
 
-  $: strokes = (getRoomWork(room.id).ink as Stroke[]) ?? [];
+  $: { current = null; strokes = (getRoomWork(room.id).ink as Stroke[]) ?? []; }
 
   function persist() { updateRoomWork(room.id, { ink: strokes }); }
   function pt(e: PointerEvent): number[] {
@@ -24,6 +24,7 @@
   }
   function down(e: PointerEvent) {
     if (tool === "eraser") return;
+    svg.setPointerCapture(e.pointerId);
     current = { tool, color, points: [pt(e)] };
     strokes = [...strokes, current];
   }
