@@ -28,9 +28,31 @@
 {/if}
 
 <style>
-  .tabs { display: flex; gap: 6px; padding: 6px 8px; }
-  button.active { color: var(--mza); }
-  textarea { width: 100%; min-height: 240px; background: #0a0e13; color: var(--text);
-    border: 1px solid var(--line); border-radius: 8px; padding: 12px; resize: vertical; }
-  .mdview { padding: 4px 8px; }
+  .tabs { display: flex; gap: 0; margin-bottom: 10px; background: var(--seg-bg); border: 1px solid var(--seg-border); border-radius: 7px; overflow: hidden; width: fit-content; }
+  button {
+    background: none; color: var(--seg-idle); border: none;
+    padding: 5px 14px; cursor: pointer; font-size: 13px;
+    font-family: var(--sc-font); letter-spacing: .03em;
+    transition: background .1s, color .1s;
+  }
+  button.active {
+    background: var(--seg-active-bg); color: var(--seg-active-text);
+  }
+  textarea {
+    width: 100%; min-height: 180px;
+    background: var(--ta-bg); color: var(--ta-text);
+    border: 1px solid var(--ta-border); border-radius: 7px;
+    padding: 12px; resize: vertical; outline: none;
+    font-family: 'Caveat', cursive; font-size: 16px; line-height: 1.55;
+  }
+  textarea::placeholder { color: var(--dim); opacity: .75; font-style: italic; }
+  .mdview {
+    padding: 4px 6px;
+    font-family: var(--serif-font); font-size: 15px; line-height: 1.65; color: var(--text);
+  }
+  .mdview :global(p) { margin: 0 0 10px; }
+  .mdview :global(h1), .mdview :global(h2), .mdview :global(h3) {
+    font-family: var(--disp-font); color: var(--mza); margin: 12px 0 6px;
+  }
+  .mdview :global(a[data-room]) { color: var(--mza); cursor: pointer; text-decoration: underline dotted; }
 </style>
