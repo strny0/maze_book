@@ -55,6 +55,7 @@
   ];
 
   onMount(() => {
+    markExplored($currentRoom);
     const frontier = computeFrontier($explored, $doors, $userEdges);
     cy = cytoscape({
       container: host,
