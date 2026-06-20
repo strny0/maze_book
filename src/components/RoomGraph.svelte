@@ -148,29 +148,33 @@
   let shiftHeld = false;
 
   function onMouseMove(e: MouseEvent) { mouseX = e.clientX; mouseY = e.clientY; }
-  function onShiftKey(e: KeyboardEvent) { shiftHeld = e.shiftKey; }
 
   function onNodeClick(e: CustomEvent) {
     const { node, event } = e.detail;
-    if (event?.shiftKey) {
-      if (drawingEdge) {
-        if (drawingEdge.sourceId === node.id) {
-          drawingEdge = null; // cancel — clicked source again
-        } else {
-          // confirm edge creation
-          userEdges.update(es => [...es, {
-            a: drawingEdge!.sourceId,
-            b: node.id,
-            aToB: true,
-            bToA: shiftHeld,
-          }]);
-          drawingEdge = null;
-        }
-      } else {
-        startDrawing(node.id);
+
+    if (drawingEdge) {
+      if (node.id === drawingEdge.sourceId) {
+        // click on source = cancel
+        drawingEdge = null;
+        return;
       }
+      // any click on a different node = confirm edge (shift determines bToA)
+      userEdges.update(es => {
+        const alreadyExists = es.some(
+          edge => (edge.a === drawingEdge!.sourceId && edge.b === node.id) ||
+                  (edge.a === node.id && edge.b === drawingEdge!.sourceId)
+        );
+        if (alreadyExists) return es;
+        return [...es, { a: drawingEdge!.sourceId, b: node.id, aToB: true, bToA: event?.shiftKey ?? false }];
+      });
+      drawingEdge = null;
+      return;
+    }
+
+    // Not drawing — plain click navigates, shift-click starts draw
+    if (event?.shiftKey) {
+      startDrawing(node.id);
     } else {
-      if (drawingEdge) { drawingEdge = null; return; }
       currentRoom.set(node.id);
     }
   }
