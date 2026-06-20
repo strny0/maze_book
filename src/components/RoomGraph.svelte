@@ -5,6 +5,7 @@
   import RoomNode from "./RoomNode.svelte";
   import DirectedEdge from "./DirectedEdge.svelte";
   import RoomDrawer from "./RoomDrawer.svelte";
+  import GraphQueryBar from "./GraphQueryBar.svelte";
   import { rooms } from "../lib/stores/content";
   import {
     currentRoom, explored, positions, userEdges,
@@ -204,7 +205,13 @@
 />
 
 <div class="graph-root">
-  <!-- GraphQueryBar placeholder — wired in Task 7 -->
+  <GraphQueryBar
+    userEdges={$userEdges}
+    {canvasIds}
+    on:highlight={(e) => { queryHighlight = e.detail; syncNodeData($currentRoom, $explored, queryHighlight, drawingEdge?.sourceId ?? null); }}
+    on:pathEdges={(e) => { pathEdgeHighlight = e.detail; syncEdges($userEdges, pathEdgeHighlight); }}
+    on:clear={() => { queryHighlight = new Set(); pathEdgeHighlight = new Set(); syncNodeData($currentRoom, $explored, queryHighlight, drawingEdge?.sourceId ?? null); syncEdges($userEdges, pathEdgeHighlight); }}
+  />
   <div
     class="flow-wrap"
     bind:this={flowWrapper}
