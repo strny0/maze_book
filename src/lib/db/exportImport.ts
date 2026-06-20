@@ -4,7 +4,23 @@ export function serializeWorkspace(doc: WorkspaceDoc): string { return JSON.stri
 export function parseWorkspace(text: string): WorkspaceDoc {
   const d = JSON.parse(text);
   if (!d || typeof d !== "object" || !("rooms" in d)) throw new Error("Invalid workspace file");
-  return { ...d, userEdges: d.userEdges ?? [] } as WorkspaceDoc;
+  const rawEdges: any[] = d.userEdges ?? [];
+  const userEdges = rawEdges.map((e) => {
+    if ("from" in e) {
+      // migrate { from, to, oneWay } → new shape
+      return { a: e.from, b: e.to, aToB: true, bToA: !e.oneWay };
+    }
+    if ("direction" in e) {
+      // migrate { a, b, direction } → new shape
+      return {
+        a: e.a, b: e.b,
+        aToB: e.direction === "aToB" || e.direction === "both",
+        bToA: e.direction === "bToA" || e.direction === "both",
+      };
+    }
+    return e; // already new shape
+  });
+  return { ...d, userEdges } as WorkspaceDoc;
 }
 export function serializeContent(doc: ContentDoc): string { return JSON.stringify(doc, null, 2); }
 export function parseContent2(text: string): ContentDoc {

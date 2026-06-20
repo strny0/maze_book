@@ -19,6 +19,27 @@ describe("export/import", () => {
     expect(parsed.userEdges).toEqual([]);
   });
 
+  it("migrates old { from, to, oneWay: true } userEdges", () => {
+    const old = JSON.stringify({ rooms: {}, explored: [], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "", userEdges: [{ from: "01", to: "17", oneWay: true }] });
+    expect(parseWorkspace(old).userEdges[0]).toEqual({ a: "01", b: "17", aToB: true, bToA: false });
+  });
+
+  it("migrates old { from, to, oneWay: false } userEdges", () => {
+    const old = JSON.stringify({ rooms: {}, explored: [], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "", userEdges: [{ from: "01", to: "17", oneWay: false }] });
+    expect(parseWorkspace(old).userEdges[0]).toEqual({ a: "01", b: "17", aToB: true, bToA: true });
+  });
+
+  it("migrates old { a, b, direction: 'both' } userEdges", () => {
+    const old = JSON.stringify({ rooms: {}, explored: [], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "", userEdges: [{ a: "01", b: "17", direction: "both" }] });
+    expect(parseWorkspace(old).userEdges[0]).toEqual({ a: "01", b: "17", aToB: true, bToA: true });
+  });
+
+  it("passes new { a, b, aToB, bToA } userEdges through unchanged", () => {
+    const edge = { a: "01", b: "17", aToB: true, bToA: false };
+    const doc = JSON.stringify({ rooms: {}, explored: [], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "", userEdges: [edge] });
+    expect(parseWorkspace(doc).userEdges[0]).toEqual(edge);
+  });
+
   it("round-trips a content doc through JSON", () => {
     const doc = {
       rooms: [{ id: "00", text: ["p"], image: "prologue.jpg" }],
