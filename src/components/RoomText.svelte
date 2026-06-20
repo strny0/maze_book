@@ -8,7 +8,7 @@
 </div>
 
 <style>
-  .text { font-family: var(--serif); line-height: 1.62; color: var(--text); }
+  .text { font-family: var(--serif-font); font-size: 15px; line-height: 1.68; color: var(--text); }
   .text p { margin: 0 0 12px; }
   .text p:last-child { margin-bottom: 0; }
 </style>
