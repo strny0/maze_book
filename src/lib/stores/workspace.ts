@@ -1,7 +1,7 @@
 import { writable, derived, get } from "svelte/store";
 import { setWorkspace, type WorkspaceDoc, type RoomWork } from "../db/idb";
 
-const EMPTY_WORK: RoomWork = { notes: "", ink: [], annotations: [], pins: [] };
+const EMPTY_WORK: RoomWork = Object.freeze({ notes: "", ink: [], annotations: [], pins: [] }) as RoomWork;
 
 export const currentRoom = writable<string>("00");
 export const explored = writable<Set<string>>(new Set());
