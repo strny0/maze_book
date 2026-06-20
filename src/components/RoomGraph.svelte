@@ -3,6 +3,7 @@
   import { SvelteFlow, Background, Controls, type Node, type Edge } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   import RoomNode from "./RoomNode.svelte";
+  import DirectedEdge from "./DirectedEdge.svelte";
   import RoomDrawer from "./RoomDrawer.svelte";
   import { rooms } from "../lib/stores/content";
   import {
@@ -12,6 +13,8 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const nodeTypes: any = { room: RoomNode };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const edgeTypes: any = { user: DirectedEdge };
 
   // Query highlight state (extended in Task 7)
   let queryHighlight = new Set<string>();
@@ -79,6 +82,18 @@
     });
   }
 
+  function toggleEdge(a: string, b: string, field: 'aToB' | 'bToA') {
+    userEdges.update(es => {
+      const idx = es.findIndex(e => e.a === a && e.b === b);
+      if (idx < 0) return es;
+      const e = es[idx];
+      const newVal = !e[field];
+      const otherField = field === 'aToB' ? 'bToA' : 'aToB';
+      if (!newVal && !e[otherField]) return es.filter((_, i) => i !== idx);
+      return es.map((edge, i) => i === idx ? { ...edge, [field]: newVal } : edge);
+    });
+  }
+
   function syncEdges(ue: typeof $userEdges, peh: Set<string>) {
     sfEdges.set(ue.map((e) => {
       const id = `${e.a}--${e.b}`;
@@ -86,8 +101,14 @@
         id,
         source: e.a,
         target: e.b,
-        // markerStart/markerEnd added in Task 6 when DirectedEdge is wired up
-        style: peh.has(id) ? "stroke:#ffffff;stroke-width:2.5px" : "stroke:#e2a857;stroke-width:1.5px",
+        type: "user",
+        data: {
+          aToB: e.aToB,
+          bToA: e.bToA,
+          isPath: peh.has(id),
+          onToggleAToB: () => toggleEdge(e.a, e.b, 'aToB'),
+          onToggleBToA: () => toggleEdge(e.a, e.b, 'bToA'),
+        },
       };
     }));
   }
@@ -191,10 +212,21 @@
     on:dragover={onDragOver}
     on:contextmenu|preventDefault={() => { if (drawingEdge) drawingEdge = null; }}
   >
+    <svg width="0" height="0" style="position:absolute;pointer-events:none">
+      <defs>
+        <marker id="arr-fwd"  markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#e2a857" />
+        </marker>
+        <marker id="arr-back" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto-start-reverse">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#e2a857" />
+        </marker>
+      </defs>
+    </svg>
     <SvelteFlow
       nodes={sfNodes}
       edges={sfEdges}
       {nodeTypes}
+      {edgeTypes}
       fitView
       on:nodeclick={onNodeClick}
       on:nodedragstop={onNodeDragStop}
