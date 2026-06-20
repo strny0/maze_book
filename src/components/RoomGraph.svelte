@@ -80,13 +80,16 @@
   }
 
   function syncEdges(ue: typeof $userEdges, peh: Set<string>) {
-    sfEdges.set(ue.map((e, i) => ({
-      id: `ue-${i}`,
-      source: e.a,
-      target: e.b,
-      // markerStart/markerEnd added in Task 6 when DirectedEdge is wired up
-      style: peh.has(`ue-${i}`) ? "stroke:#ffffff;stroke-width:2.5px" : "stroke:#e2a857;stroke-width:1.5px",
-    })));
+    sfEdges.set(ue.map((e) => {
+      const id = `${e.a}--${e.b}`;
+      return {
+        id,
+        source: e.a,
+        target: e.b,
+        // markerStart/markerEnd added in Task 6 when DirectedEdge is wired up
+        style: peh.has(id) ? "stroke:#ffffff;stroke-width:2.5px" : "stroke:#e2a857;stroke-width:1.5px",
+      };
+    }));
   }
 
   // ── Drag-to-canvas ──────────────────────────────────────────────────────────
@@ -118,13 +121,29 @@
 
   // drawingEdge state — extended in Task 5
   let drawingEdge: { sourceId: string; sourceX: number; sourceY: number } | null = null;
+  let mouseX = 0;
+  let mouseY = 0;
+  let shiftHeld = false;
+
+  function onMouseMove(e: MouseEvent) { mouseX = e.clientX; mouseY = e.clientY; }
+  function onShiftKey(e: KeyboardEvent) { shiftHeld = e.shiftKey; }
 
   function onNodeClick(e: CustomEvent) {
     const { node, event } = e.detail;
     if (event?.shiftKey) {
       if (drawingEdge) {
-        if (drawingEdge.sourceId === node.id) { drawingEdge = null; return; }
-        // edge creation handled in Task 5
+        if (drawingEdge.sourceId === node.id) {
+          drawingEdge = null; // cancel — clicked source again
+        } else {
+          // confirm edge creation
+          userEdges.update(es => [...es, {
+            a: drawingEdge!.sourceId,
+            b: node.id,
+            aToB: true,
+            bToA: shiftHeld,
+          }]);
+          drawingEdge = null;
+        }
       } else {
         startDrawing(node.id);
       }
@@ -157,7 +176,11 @@
   $: unplacedRooms = $rooms.map(r => r.id).filter(id => !canvasIds.has(id)).sort();
 </script>
 
-<svelte:window on:keydown={(e) => { if (e.key === "Escape") drawingEdge = null; }} />
+<svelte:window
+  on:mousemove={onMouseMove}
+  on:keydown={(e) => { if (e.key === "Escape") drawingEdge = null; shiftHeld = e.shiftKey; }}
+  on:keyup={(e) => { shiftHeld = e.shiftKey; }}
+/>
 
 <div class="graph-root">
   <!-- GraphQueryBar placeholder — wired in Task 7 -->
@@ -179,6 +202,32 @@
       <Background />
       <Controls />
     </SvelteFlow>
+    {#if drawingEdge}
+      {@const dx = mouseX - drawingEdge.sourceX}
+      {@const dy = mouseY - drawingEdge.sourceY}
+      {@const len = Math.sqrt(dx * dx + dy * dy) || 1}
+      {@const tipX = mouseX - (dx / len) * 10}
+      {@const tipY = mouseY - (dy / len) * 10}
+      <svg class="ghost-svg">
+        <defs>
+          <marker id="ga-fwd" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#e2a857" opacity="0.85" />
+          </marker>
+          {#if shiftHeld}
+            <marker id="ga-back" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto-start-reverse">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#e2a857" opacity="0.85" />
+            </marker>
+          {/if}
+        </defs>
+        <line
+          x1={drawingEdge.sourceX} y1={drawingEdge.sourceY}
+          x2={tipX} y2={tipY}
+          stroke="#e2a857" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.75"
+          marker-end="url(#ga-fwd)"
+          marker-start={shiftHeld ? "url(#ga-back)" : undefined}
+        />
+      </svg>
+    {/if}
   </div>
   <RoomDrawer {unplacedRooms} />
 </div>
@@ -188,4 +237,9 @@
   .flow-wrap  { flex: 1; min-height: 0; position: relative; }
 
   :global(.svelte-flow__node) { padding: 0; border: none; background: none; box-shadow: none; }
+
+  .ghost-svg {
+    position: fixed; inset: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 9999;
+  }
 </style>
