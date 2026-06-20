@@ -27,7 +27,7 @@
   let imgEl: HTMLImageElement;
 
   // ── Stroke types ────────────────────────────────────────────────────────
-  type Stroke = { tool: "pen" | "highlighter"; color: string; points: number[][] };
+  type Stroke = { tool: "pen" | "highlighter"; color: string; points: number[][]; size?: number };
   let current: Stroke | null = null;
 
   // ── Annotation state ────────────────────────────────────────────────────
@@ -35,7 +35,7 @@
   let lockedId: number | null = null;
   let annoStart: { x: number; y: number } | null = null;
   let previewBox: { x: number; y: number; w: number; h: number } | null = null;
-  let nextAnnoId = 1;
+  $: nextAnnoId = annos.length > 0 ? Math.max(...annos.map(a => a.id)) + 1 : 1;
   let hoverTimer: ReturnType<typeof setTimeout> | null = null;
 
   // ── Drag state ──────────────────────────────────────────────────────────
@@ -128,8 +128,9 @@
     return [x, y, e.pressure || 0.5];
   }
   function path(s: Stroke): string {
+    const sz = s.size ?? (s.tool === "highlighter" ? 26 : 9);
     const pts = s.points.map(p => [p[0] * WORLD_W, p[1] * worldH, p[2]]);
-    return strokeToPath(pts, { size: s.tool === "highlighter" ? 26 : 9 });
+    return strokeToPath(pts, { size: sz });
   }
 
   // ── Pointer events ──────────────────────────────────────────────────────
@@ -150,7 +151,7 @@
     if (e.button !== 0) return;
     if (isPaint) {
       const t = tool === "highlight" ? "highlighter" : "pen";
-      current = { tool: t, color, points: [frac(e)] };
+      current = { tool: t, color, points: [frac(e)], size: tool === "highlight" ? highlightSize : brushSize };
       dragMode = "draw";
     } else if (tool === "annotate") {
       if (lockedId != null) { closePopup(lockedId); return; }
