@@ -173,17 +173,23 @@
 
     // Not drawing — plain click navigates, shift-click starts draw
     if (event?.shiftKey) {
-      startDrawing(node.id);
+      startDrawing(node.id, event);
     } else {
       currentRoom.set(node.id);
     }
   }
 
-  function startDrawing(nodeId: string) {
+  function startDrawing(nodeId: string, ev?: MouseEvent | TouchEvent) {
+    // Prefer DOM-derived center; fall back to click coords or last known mouse position
     const el = flowWrapper?.querySelector(`[data-id="${nodeId}"]`) as HTMLElement | null;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    drawingEdge = { sourceId: nodeId, sourceX: rect.left + rect.width / 2, sourceY: rect.top + rect.height / 2 };
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      drawingEdge = { sourceId: nodeId, sourceX: rect.left + rect.width / 2, sourceY: rect.top + rect.height / 2 };
+    } else if (ev instanceof MouseEvent) {
+      drawingEdge = { sourceId: nodeId, sourceX: ev.clientX, sourceY: ev.clientY };
+    } else {
+      drawingEdge = { sourceId: nodeId, sourceX: mouseX, sourceY: mouseY };
+    }
   }
 
   function onNodeDragStop(e: CustomEvent) {
@@ -239,6 +245,8 @@
       {nodeTypes}
       {edgeTypes}
       fitView
+      selectionKey={null}
+      multiSelectionKey={null}
       on:nodeclick={onNodeClick}
       on:nodedragstop={onNodeDragStop}
     >
