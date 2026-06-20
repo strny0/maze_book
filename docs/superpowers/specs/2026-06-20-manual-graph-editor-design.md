@@ -18,20 +18,20 @@ Pre-parsed `doors` data remains available for the room text panel (reference), b
 ### `UserEdge` (updated)
 
 ```ts
-type EdgeDirection = "aToB" | "bToA" | "both";
-
 interface UserEdge {
   a: string;
   b: string;
-  direction: EdgeDirection;
+  aToB: boolean;  // can travel A→B; dot at A filled when true
+  bToA: boolean;  // can travel B→A; dot at B filled when true
+  // invariant: aToB || bToA (enforced at interaction layer — toggling the last true field deletes the edge)
 }
 ```
 
-`a`/`b` are unordered — directionality is fully captured by `direction`. The type system enforces the invariant that at least one direction is always active (no "neither" state possible). Replaces the old `{ from, to, oneWay }` shape.
+`a`/`b` are unordered. The two booleans map directly to the two endpoint toggle dots in the UI and simplify BFS traversal (`edge.aToB` rather than `direction === "aToB" || direction === "both"`). The invariant is enforced behaviourally, not by the type system. Replaces the old `{ from, to, oneWay }` shape.
 
 ### `WorkspaceDoc` (updated)
 
-`userEdges: UserEdge[]` stays, referencing the new type. `positions`, `roomWork`, `tags`, `globalNotes` are unchanged. Import migration: old `{ from, to, oneWay }` edges are converted to `{ a: from, b: to, direction: oneWay ? "aToB" : "both" }` at parse time in `exportImport.ts`.
+`userEdges: UserEdge[]` stays, referencing the new type. `positions`, `roomWork`, `tags`, `globalNotes` are unchanged. Import migration: old `{ from, to, oneWay }` edges are converted to `{ a: from, b: to, aToB: true, bToA: !oneWay }` at parse time in `exportImport.ts`.
 
 ### "On canvas"
 
@@ -41,9 +41,9 @@ A room is on canvas if and only if it has an entry in the `positions` store. `ne
 
 Changes from `writable<Set<string>>` to a **derived store** computed by BFS from room `"01"` through `userEdges`, respecting direction:
 
-- `"aToB"` → traversable from `a` to `b` only
-- `"bToA"` → traversable from `b` to `a` only
-- `"both"` → traversable either way
+- `aToB: true` → traversable from `a` to `b`
+- `bToA: true` → traversable from `b` to `a`
+- Both true → traversable either way
 
 Updates automatically whenever `userEdges` changes. Room `"01"` is always on canvas (pre-placed on first load; cannot be removed). If `"01"` has no edges, `explored = new Set(["01"])`.
 
@@ -111,27 +111,20 @@ Rooms can be placed without being connected to anything — isolated canvas node
 
 1. Shift-click a placed node → `drawingEdge = { sourceId }`
 2. SVG overlay (absolute, `pointer-events: none`) renders a dashed ghost line from source node center to current mouse position, with arrowhead(s) based on current shift state
-3. Holding shift during draw → ghost shows two arrowheads (`"both"`); releasing shift → single arrowhead (`"aToB"`)
+3. Holding shift during draw → ghost shows arrowheads at both ends (`aToB: true, bToA: true`); releasing shift → single arrowhead at target only (`aToB: true, bToA: false`)
 4. **Cancel:** Escape key, right-click anywhere on canvas, or clicking the source node again → `drawingEdge = null`
-5. **Confirm:** click any other placed node → creates `UserEdge { a: sourceId, b: targetId, direction: shiftHeld ? "both" : "aToB" }`, clears `drawingEdge`
+5. **Confirm:** click any other placed node → creates `UserEdge { a: sourceId, b: targetId, aToB: true, bToA: shiftHeld }`, clears `drawingEdge`
 
 Source node shows a subtle glow ring while draw mode is active.
 
-### Edge endpoint click to edit direction
+### Edge endpoint dots to edit direction
 
-Clicking an edge compares the click position (converted to graph space) against node A and node B centers. Whichever node center is closer determines which "half" was clicked.
+On edge hover, two small circular toggle dots appear — one at each endpoint. Each dot represents the outgoing direction FROM that node:
 
-Clicking the **B half** (toward B) toggles the `aToB` component:
+- **Dot at A** (filled = `aToB: true`): can travel A→B
+- **Dot at B** (filled = `bToA: true`): can travel B→A
 
-| Current direction | After click near B |
-|---|---|
-| `"aToB"` | delete edge |
-| `"bToA"` | `"both"` |
-| `"both"` | `"bToA"` |
-
-Clicking the **A half** (toward A) toggles `bToA` symmetrically.
-
-When hovering an edge half that would delete the edge (the only remaining direction), that half turns red as a visual warning.
+Clicking a dot toggles its boolean. If the click would set both to `false` (last active direction), the edge is deleted instead. The dot turns red on hover when clicking it would trigger deletion, as a visual warning.
 
 ### Remove node from canvas
 
@@ -168,13 +161,17 @@ Nodes are 28×28px rounded squares, room number centered, 9px font.
 
 ### Edge states
 
-All user edges are amber `#e2a857`, 1.5px. Arrowheads appear at endpoints permitted by `direction` (Svelte Flow `markerStart`/`markerEnd` SVG markers).
+All user edges are amber `#e2a857`, 1.5px. Arrowheads appear at endpoints where the corresponding boolean is true (`aToB` → arrowhead at B, `bToA` → arrowhead at A), using Svelte Flow `markerStart`/`markerEnd` SVG markers.
+
+On hover, two small circular dots (~6px) appear at each endpoint — filled `#e2a857` if that direction is active, hollow/dim if inactive.
 
 | State | Style |
 |---|---|
 | Normal | amber `#e2a857`, 1.5px |
 | Query path | white `#ffffff`, 2.5px |
-| Hover half (would delete) | red `#e05050` on hovered half |
+| Dot (direction active) | filled `#e2a857` |
+| Dot (direction inactive) | hollow, `#4a5a6a` |
+| Dot hover (would delete edge) | red `#e05050` |
 
 ### Ghost edge
 
