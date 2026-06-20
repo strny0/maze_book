@@ -52,3 +52,24 @@ export function startAutosave() {
     timer = setTimeout(() => void setWorkspace(doc), 400);
   });
 }
+
+export function toggleTag(roomId: string, tagName: string) {
+  tags.update((t) => {
+    const current = t.byRoom[roomId] ?? [];
+    const next = current.includes(tagName)
+      ? current.filter((x) => x !== tagName)
+      : [...current, tagName];
+    return { ...t, byRoom: { ...t.byRoom, [roomId]: next } };
+  });
+}
+
+export function setTagDef(name: string, color: string) {
+  tags.update((t) => {
+    const existing = t.defs.findIndex((d) => d.name === name);
+    const defs =
+      existing >= 0
+        ? t.defs.map((d, i) => (i === existing ? { name, color } : d))
+        : [...t.defs, { name, color }];
+    return { ...t, defs };
+  });
+}
