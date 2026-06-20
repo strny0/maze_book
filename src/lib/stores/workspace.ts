@@ -36,6 +36,21 @@ export const workspaceDoc = derived(
   })
 );
 
+export function toggleTag(roomId: string, name: string) {
+  tags.update((t) => {
+    const cur = t.byRoom[roomId] ?? [];
+    const next = cur.includes(name) ? cur.filter((n) => n !== name) : [...cur, name];
+    return { ...t, byRoom: { ...t.byRoom, [roomId]: next } };
+  });
+}
+export function setTagDef(name: string, color: string) {
+  tags.update((t) =>
+    t.defs.some((d) => d.name === name)
+      ? t
+      : { ...t, defs: [...t.defs, { name, color }] }
+  );
+}
+
 let timer: ReturnType<typeof setTimeout> | null = null;
 let started = false;
 export function startAutosave() {
