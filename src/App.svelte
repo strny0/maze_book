@@ -35,11 +35,18 @@
     downloadJson("maze-workspace.json", serializeWorkspace(get(workspaceDoc)));
   }
   async function importWs(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0];
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) return;
-    const doc = parseWorkspace(await file.text());
-    await setWorkspace(doc);
-    initWorkspace(doc);
+    try {
+      const doc = parseWorkspace(await file.text());
+      await setWorkspace(doc);
+      initWorkspace(doc);
+    } catch (err) {
+      alert("Import failed: " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      input.value = "";
+    }
   }
 </script>
 

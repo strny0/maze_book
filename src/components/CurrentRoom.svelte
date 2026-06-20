@@ -20,7 +20,8 @@
     if (!name) return;
     const color = TAG_PALETTE[$tags.defs.length % TAG_PALETTE.length];
     setTagDef(name, color);
-    toggleTag($currentRoom, name);
+    const roomTags = $tags.byRoom[$currentRoom] ?? [];
+    if (!roomTags.includes(name)) toggleTag($currentRoom, name);
     newTag = "";
   }
 </script>
