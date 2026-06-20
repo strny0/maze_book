@@ -19,4 +19,13 @@ describe("buildElements", () => {
     const els = buildElements(rooms, doors, "00", new Set(), { "01": { x: 5, y: 9 } });
     expect(els.find((e) => (e.data as any).id === "01")?.position).toEqual({ x: 5, y: 9 });
   });
+  it("tags explored nodes with the explored class", () => {
+    const els = buildElements(rooms, doors, "00", new Set(["01"]), {});
+    expect((els.find((e) => (e.data as any).id === "01") as any)?.classes).toContain("explored");
+  });
+  it("tags one-way doors with the oneway class", () => {
+    const doorOW = [{ from: "00", to: "01", oneWay: true }];
+    const els = buildElements(rooms, doorOW, "00", new Set(), {});
+    expect((els.find((e) => "source" in (e.data as any)) as any)?.classes).toContain("oneway");
+  });
 });

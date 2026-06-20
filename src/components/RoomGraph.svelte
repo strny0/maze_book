@@ -44,12 +44,13 @@
 
   // reflect current-room highlight without rebuilding the whole graph
   $: if (cy) {
-    cy.nodes().removeClass("current");
+    cy.nodes().removeClass("current explored");
+    cy.nodes().forEach((n) => { if ($explored.has(n.id())) n.addClass("explored"); });
     cy.getElementById($currentRoom).addClass("current");
   }
 
-  function reflow() { runLayout(cy, layout); }
-  function fit() { cy.fit(undefined, 30); }
+  function reflow() { if (cy) runLayout(cy, layout); }
+  function fit() { cy?.fit(undefined, 30); }
   function onLayoutChange() { runLayout(cy, layout); }
 </script>
 
