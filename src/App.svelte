@@ -11,6 +11,7 @@
   import BottomDrawer from "./components/BottomDrawer.svelte";
   import CurrentRoom from "./components/CurrentRoom.svelte";
   import RoomDirectory from "./components/RoomDirectory.svelte";
+  import RoomGraph from "./components/RoomGraph.svelte";
 
   let ready = false;
   $: currentRoomObj = $roomById.get($currentRoom);
@@ -39,7 +40,7 @@
   </main>
 
   <BottomDrawer>
-    <p>Room graph goes here (Task 10)</p>
+    <RoomGraph />
   </BottomDrawer>
 {:else}
   <p>Loading…</p>
