@@ -13,6 +13,11 @@ describe("export/import", () => {
   it("throws on shape-invalid workspace (valid json, missing rooms)", () => {
     expect(() => parseWorkspace('{"foo":1}')).toThrow();
   });
+  it("defaults userEdges to [] when field is absent (legacy doc)", () => {
+    const legacy = JSON.stringify({ rooms: {}, explored: [], tags: { defs: [], byRoom: {} }, positions: {}, globalNotes: "" });
+    const parsed = parseWorkspace(legacy);
+    expect(parsed.userEdges).toEqual([]);
+  });
 
   it("round-trips a content doc through JSON", () => {
     const doc = {

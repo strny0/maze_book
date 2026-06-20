@@ -55,6 +55,7 @@
   ];
 
   onMount(() => {
+    // ensure the starting room is visible on first load (explored may be empty on fresh workspace)
     markExplored($currentRoom);
     const frontier = computeFrontier($explored, $doors, $userEdges);
     cy = cytoscape({
@@ -154,7 +155,7 @@
       // Save all positions after a re-flow so they persist
       const newPos: Record<string, { x: number; y: number }> = {};
       cy.nodes().forEach((n) => { newPos[n.id()] = { ...n.position() }; });
-      positions.set(newPos);
+      positions.update((m) => ({ ...m, ...newPos }));
       cy.fit(undefined, 30);
     });
     runLayout(cy, layout);
