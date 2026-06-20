@@ -46,6 +46,8 @@
   }
 </script>
 
+<svelte:window on:mousedown={() => (pop = null)} />
+
 <div class="tabs">
   <button class:active={tab === "text"} on:click={() => (tab = "text")}>Text</button>
   <button class:active={tab === "comments"} on:click={() => (tab = "comments")}>Comments</button>
@@ -55,7 +57,7 @@
   {#each room.text as para, i}
     <p class="para" on:mouseup={(e) => onMouseUp(i, e, e.currentTarget)}>
       {#each applyAnnotations(para, byPara(i)) as seg}
-        {#if seg.ann}<span style={styleFor(seg.ann)} title={seg.ann.comment ?? ""}>{seg.text}</span>
+        {#if seg.ann}<span style={styleFor(seg.ann)} title={seg.ann.comment || undefined}>{seg.text}</span>
         {:else}{seg.text}{/if}
       {/each}
     </p>
@@ -69,7 +71,7 @@
 {/if}
 
 {#if pop}
-  <div class="pop" style="left:{pop.x}px; top:{pop.y}px">
+  <div class="pop" style="left:{pop.x}px; top:{pop.y}px" on:mousedown|stopPropagation>
     <button on:click={() => addAnn({ bold: true })}><b>B</b></button>
     <button on:click={() => addAnn({ italic: true })}><i>I</i></button>
     <button on:click={() => addAnn({ highlight: "#e2a85755" })}>HL</button>
