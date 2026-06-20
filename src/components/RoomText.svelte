@@ -2,12 +2,12 @@
   import type { Room } from "../lib/types";
   import type { TextAnnotation } from "../lib/db/idb";
   import { applyAnnotations } from "../lib/text/annotations";
-  import { getRoomWork, updateRoomWork } from "../lib/stores/workspace";
+  import { roomWork, updateRoomWork } from "../lib/stores/workspace";
 
   export let room: Room;
   let tab: "text" | "comments" = "text";
 
-  $: anns = getRoomWork(room.id).annotations;
+  $: anns = $roomWork[room.id]?.annotations ?? [];
   $: byPara = (i: number) => anns.filter((a) => a.paraIndex === i);
 
   let pop: { paraIndex: number; start: number; end: number; x: number; y: number } | null = null;

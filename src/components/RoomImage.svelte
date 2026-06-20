@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Room } from "../lib/types";
   import { strokeToPath } from "../lib/ink/freehand";
-  import { getRoomWork, updateRoomWork } from "../lib/stores/workspace";
+  import { roomWork, updateRoomWork } from "../lib/stores/workspace";
 
   export let room: Room;
 
@@ -15,8 +15,8 @@
   let hideInk = false;
   let svg: SVGSVGElement;
 
-  $: { current = null; strokes = (getRoomWork(room.id).ink as Stroke[]) ?? []; }
-  $: pins = getRoomWork(room.id).pins ?? [];
+  $: { current = null; strokes = ($roomWork[room.id]?.ink as Stroke[]) ?? []; }
+  $: pins = $roomWork[room.id]?.pins ?? [];
 
   function persist() { updateRoomWork(room.id, { ink: strokes }); }
   function pt(e: PointerEvent): number[] {
@@ -62,7 +62,7 @@
 </div>
 
 <div class="canvas">
-  <img src={`assets/images/${room.image.includes("/") ? room.image : (room.id === "00" ? room.image : "room/" + room.image)}`} alt={`Room ${room.id}`} draggable="false" />
+  <img src={room.image} alt={`Room ${room.id}`} draggable="false" />
   <svg bind:this={svg} on:pointerdown={down} on:pointermove={move} on:pointerup={up} on:pointerleave={up}>
     {#if !hideInk}
       {#each strokes as s, i}

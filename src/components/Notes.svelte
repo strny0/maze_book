@@ -1,11 +1,11 @@
 <script lang="ts">
   import { renderMarkdown } from "../lib/markdown/render";
-  import { getRoomWork, updateRoomWork, currentRoom } from "../lib/stores/workspace";
+  import { roomWork, updateRoomWork, currentRoom } from "../lib/stores/workspace";
 
   export let roomId: string;
   let mode: "write" | "preview" = "write";
   let value = "";
-  $: value = getRoomWork(roomId).notes;
+  $: value = $roomWork[roomId]?.notes ?? "";
 
   function onInput(e: Event) {
     value = (e.target as HTMLTextAreaElement).value;
