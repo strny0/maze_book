@@ -3,7 +3,7 @@ import type { Room, Door, UserEdge } from "../types";
 
 export interface RoomWork {
   notes: string;
-  ink: { tool: "pen" | "highlighter"; color: string; points: number[][] }[];
+  ink: { tool: "pen" | "highlighter"; color: string; points: number[][]; size?: number }[];
   annotations: TextAnnotation[];
   imageAnnotations: ImageAnnotation[];
   pins: Pin[];

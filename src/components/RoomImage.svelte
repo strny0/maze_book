@@ -37,6 +37,8 @@
   let previewBox: { x: number; y: number; w: number; h: number } | null = null;
   $: nextAnnoId = annos.length > 0 ? Math.max(...annos.map(a => a.id)) + 1 : 1;
   let hoverTimer: ReturnType<typeof setTimeout> | null = null;
+  let clearArmed = false;
+  let clearArmTimer: ReturnType<typeof setTimeout> | null = null;
 
   // ── Drag state ──────────────────────────────────────────────────────────
   type DragMode = "none" | "pan" | "draw" | "erase" | "anno";
@@ -231,8 +233,8 @@
     const dx = Math.abs(end.x - start.x) * WORLD_W;
     const dy = Math.abs(end.y - start.y) * worldH;
     const a: ImageAnnotation = dx < 8 && dy < 8
-      ? { id: nextAnnoId++, type: "point", x: start.x, y: start.y, text: "" }
-      : { id: nextAnnoId++, type: "box",
+      ? { id: nextAnnoId, type: "point", x: start.x, y: start.y, text: "" }
+      : { id: nextAnnoId, type: "box",
           x: Math.min(start.x, end.x), y: Math.min(start.y, end.y),
           w: Math.abs(end.x - start.x), h: Math.abs(end.y - start.y), text: "" };
     lockedId = a.id;
@@ -308,6 +310,18 @@
     else if (k === "4") { tool = "annotate"; }
     else if (k === "v" || k === "V") { hideInk = !hideInk; }
     else if (k === "f" || k === "F") { tryFit(); }
+    else if ((k === "x" || k === "X") && e.shiftKey) {
+      // First Shift+X: arm the sequence
+      if (clearArmed) {
+        // Second Shift+X: fire
+        if (clearArmTimer) { clearTimeout(clearArmTimer); clearArmTimer = null; }
+        clearArmed = false;
+        clearAll();
+      } else {
+        clearArmed = true;
+        clearArmTimer = setTimeout(() => { clearArmed = false; clearArmTimer = null; }, 1500);
+      }
+    }
   }
 
   onMount(() => {
@@ -316,6 +330,7 @@
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", tryFit);
+      if (clearArmTimer) clearTimeout(clearArmTimer);
     };
   });
 </script>
@@ -397,7 +412,7 @@
           <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
         </svg>
       </button>
-      <button class="tbtn danger" on:click={clearAll} title="Clear everything">
+      <button class="tbtn danger" on:click={() => { if (window.confirm("Clear all ink and annotations for this room?")) clearAll(); }} title="Clear everything">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
         </svg>
