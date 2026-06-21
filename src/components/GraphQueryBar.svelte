@@ -74,8 +74,8 @@
 
 <style>
   .bar {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 5px 10px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    padding: 4px 10px; border-bottom: 1px solid var(--line);
     flex: none; background: var(--panel); font-size: 11px;
   }
   .group { display: flex; align-items: center; gap: 5px; }

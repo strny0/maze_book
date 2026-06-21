@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Handle, Position } from "@xyflow/svelte";
   export let data: {
     roomId: string;
     isCurrent: boolean;
@@ -20,6 +21,8 @@
 </script>
 
 <svelte:window on:click={dismissMenu} />
+
+<Handle type="source" position={Position.Top} class="center-handle" />
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
@@ -46,18 +49,20 @@
 
 <style>
   .node {
-    width: 28px; height: 28px; border-radius: 6px;
-    background: #3a4756; border: 1px solid #4a5a6a;
+    width: 40px; height: 40px; border-radius: 6px;
+    background: var(--panel2); border: 1px solid var(--line);
+    border-bottom: 3px solid var(--btn-border-b);
     display: flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 600; color: #cbd3dd;
+    font-size: 12px; font-weight: 600; color: var(--text);
+    font-family: var(--sc-font);
     cursor: pointer; position: relative; user-select: none;
     box-sizing: border-box;
   }
-  .node.current  { background: #e2a857; color: #15110a; border-color: #e2a857; }
-  .node.explored { border: 2px solid #e2a857; }
-  .node.unreachable { opacity: 0.6; border-style: dashed; }
-  .node.query-hit { box-shadow: 0 0 0 3px #e2a857, 0 0 0 5px #3a4756; }
-  .node.draw-source { box-shadow: 0 0 0 3px #e2a857aa; }
+  .node.current  { background: var(--mza); color: #15110a; border-color: var(--mza); border-bottom-color: var(--mzad); }
+  .node.explored { border: 2px solid var(--mza); border-bottom-width: 3px; border-bottom-color: var(--mzad); }
+  .node.unreachable { opacity: 0.55; border-style: dashed; }
+  .node.query-hit { box-shadow: 0 0 0 3px var(--mza), 0 0 0 5px var(--panel2); }
+  .node.draw-source { box-shadow: 0 0 0 3px var(--mzam); }
 
   .menu {
     position: absolute; top: 32px; left: 0; z-index: 200;
@@ -72,4 +77,11 @@
   }
   .menu button:hover { background: var(--panel2); color: #e05050; }
   .no-remove { display: block; padding: 6px 10px; font-size: 11px; color: var(--dim); }
+
+  :global(.center-handle) {
+    opacity: 0 !important; pointer-events: none !important;
+    top: 50% !important; left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 1px !important; height: 1px !important;
+  }
 </style>
