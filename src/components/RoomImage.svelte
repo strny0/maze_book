@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import type { Room } from "../lib/types";
   import { strokeToPath } from "../lib/ink/freehand";
   import { roomWork, updateRoomWork } from "../lib/stores/workspace";
@@ -240,6 +240,7 @@
     lockedId = a.id;
     hoverId = null;
     updateRoomWork(room.id, { imageAnnotations: [...annos, a] });
+    tick().then(() => viewEl?.querySelector<HTMLTextAreaElement>(".popup-ta")?.focus());
   }
 
   function eraseAnnoAt(pos: { x: number; y: number }) {
@@ -501,13 +502,15 @@
           <!-- svelte-ignore a11y-no-static-element-interactions -->
           <div
             class="popup"
+            class:locked={lockedId === a.id}
             style="left:{pos.left}px; top:{pos.top}px;"
+            on:pointerdown|stopPropagation
             on:pointerenter={popupEnter}
             on:pointerleave={() => popupLeave(a.id)}
           >
             <div class="popup-tape"></div>
             <div class="popup-head">
-              <span class="popup-label">{a.type === "point" ? "Point Note" : "Note"}</span>
+              <span class="popup-label">Note</span>
               {#if lockedId === a.id}
                 <div class="popup-actions">
                   <button class="pop-del" on:click={() => deleteAnno(a.id)}>Delete</button>
@@ -625,40 +628,60 @@
 
   /* ── Annotation popups ──────────────────────────────────────────────────*/
   .popup {
-    position: absolute; width: 230px; z-index: 40;
-    background: var(--popup-bg); border: 1px solid var(--popup-border);
-    border-radius: 6px; box-shadow: var(--popup-shadow);
-    overflow: hidden;
+    position: absolute; width: 230px; z-index: 30;
+    display: flex; flex-direction: column;
+    background: rgba(255,253,245,0.94);
+    background-image: linear-gradient(160deg, rgba(255,255,255,.5), rgba(110,80,35,.05));
+    border: 1px solid var(--popup-border);
+    border-radius: 3px; padding: 9px 13px 11px;
+    box-shadow: var(--popup-shadow);
+    transform: rotate(-1.6deg); transform-origin: center top;
+    color: var(--popup-text);
+  }
+  .popup.locked {
+    z-index: 40; border-color: var(--mza); transform: rotate(-1deg);
   }
   .popup-tape {
-    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-    width: 70px; height: 18px;
-    background: rgba(223,209,167,0.52); border: 1px solid rgba(140,120,82,0.5);
-    border-radius: 2px;
+    position: absolute; top: -10px; left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 78px; height: 21px;
+    background: rgba(223,209,167,0.52);
+    border-left: 1px dotted rgba(140,120,82,0.5);
+    border-right: 1px dotted rgba(140,120,82,0.5);
+    box-shadow: 0 1px 2px rgba(60,40,12,.16);
+    pointer-events: none;
   }
   .popup-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 10px 4px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    min-height: 22px; padding-bottom: 5px; margin-bottom: 6px;
+    border-bottom: 1px solid rgba(154,123,62,.34);
   }
   .popup-label {
-    font-family: var(--sc-font); font-size: 11px; letter-spacing: .06em;
+    font-family: var(--sc-font); font-size: 11px; letter-spacing: .18em;
     color: var(--popup-label);
   }
   .popup-actions { display: flex; align-items: center; gap: 4px; }
   .pop-del {
-    font-size: 11px; color: var(--marker); background: none; border: none;
-    cursor: pointer; padding: 0 4px; font-family: var(--sc-font);
+    font-size: 13px; color: var(--marker); background: none; border: none;
+    cursor: pointer; padding: 1px 6px; border-radius: 5px; font-family: var(--serif-font);
   }
+  .pop-del:hover { background: rgba(158,53,38,.12); }
   .pop-close {
-    font-size: 16px; color: var(--dim); background: none; border: none;
-    cursor: pointer; padding: 0 2px; line-height: 1;
+    font-size: 17px; color: var(--dim); background: none; border: none;
+    cursor: pointer; padding: 0 5px; line-height: 1; border-radius: 5px;
   }
+  .pop-close:hover { background: rgba(45,36,22,.1); color: var(--text); }
   .popup-ta {
-    display: block; width: 100%; min-height: 80px;
-    background: var(--ta-bg); color: var(--ta-text);
-    border: none; border-top: 1px solid var(--ta-border);
-    padding: 8px 10px; resize: vertical; outline: none;
-    font-family: 'Caveat', cursive; font-size: 15px; line-height: 1.5;
+    display: block; width: 100%; min-height: 56px;
+    background: transparent;
+    background-image: repeating-linear-gradient(
+      rgba(0,0,0,0) 0px, rgba(0,0,0,0) 27px, rgba(154,123,62,.3) 28px
+    );
+    background-attachment: local;
+    border: none; border-radius: 0;
+    padding: 0; resize: vertical; outline: none;
+    color: var(--popup-text);
+    font-family: 'Caveat', cursive; font-size: 22px; line-height: 28px;
   }
-  .popup-ta::placeholder { color: var(--popup-label); opacity: .85; }
+  .popup-ta::placeholder { color: var(--popup-label); opacity: .85; font-style: normal; }
 </style>

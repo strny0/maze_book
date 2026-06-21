@@ -43,7 +43,7 @@
     background: var(--ta-bg); color: var(--ta-text);
     border: 1px solid var(--ta-border); border-radius: 7px;
     padding: 12px; resize: vertical; outline: none;
-    font-family: 'Caveat', cursive; font-size: 16px; line-height: 1.55;
+    font-family: system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 1.6;
   }
   textarea::placeholder { color: var(--dim); opacity: .75; font-style: italic; }
   .mdview {

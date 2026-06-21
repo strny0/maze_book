@@ -25,3 +25,22 @@ test("annotate mode: click creates point annotation popup", async ({ page }) => 
   await view.click({ position: { x: box.width / 2, y: box.height / 2 } });
   await expect(page.locator(".popup")).toBeVisible();
 });
+
+test("annotation popup stays open and accepts text when clicked", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForSelector(".view");
+  await page.locator(".tbtn").nth(3).click(); // annotate tool
+  const view = page.locator(".view");
+  const box = await view.boundingBox();
+  if (!box) throw new Error("no view box");
+  await view.click({ position: { x: box.width / 2, y: box.height / 2 } });
+  const popup = page.locator(".popup");
+  await expect(popup).toBeVisible();
+  // Click the textarea — must NOT close popup
+  const ta = page.locator(".popup-ta");
+  await ta.click();
+  await expect(popup).toBeVisible();
+  // Type in it
+  await ta.type("hello");
+  expect(await ta.inputValue()).toBe("hello");
+});
